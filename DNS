@@ -1,10 +1,20 @@
-DNS và các khái niệm liên quan
+# DNS và các khái niệm liên quan.
+DNS hay Domain Name System, dịch nghĩa là hệ thống tên miền làm nhiệm vụ phân giải giữa địa chỉ IP và tên miền trên Internet giúp con người và máy tính gia tiếp dễ dàng hơn.
+Ex: Nó cũng giống như danh bạ trong điện thoại của bạn mà số điện thoại chính là địa chỉ IP còn tên bạn lưu chính là tên miền.
 
+1. DNS là gì? Tại sao cần sử dụng DNS?
 
+2. Chức năng của DNS.
 
+3. File /etc/hosts
+- Nếu không có DNS Server, mọi hệ thống sẽ phải chứa tên miền và địa chỉ IP.(Trên linux là file /etc/hosts)
+Ex:  172.217.24.238    google.com
 
-
-
+4. Domain
+# Top Level Domain Names (TLDs)
+# Subdomains
+# Định nghĩa máy chủ tên miền (name server)
+- Name server chứa csdl dùng cho việc chuyển đổi ip và tên miền. 
 
 
 
