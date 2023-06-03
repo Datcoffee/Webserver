@@ -1,0 +1,15 @@
+# 404 not found là lỗi không tìm hấy file, ở các máy chủ Webserver như Apache, OpenLite Speed => fix bằng cách sử dụng file .htaccess để rewrite lại các đường dẫn.
+Tuy nhiên ở Nginx thì hoàn toàn khác, bạn không thể sử dụng .htaccess để rewrite.
+# Hướng dẫn fix
+1. Bạn cần thực hiện truy cập SSH vào server/vps sau đó thực hiện cấu hình lại Vhost Nginx.
+File mặc định của thông thường sẽ nằm tại đường dẫn là: /etc/nginx/conf.d/domain.conf         #find -name: để tìm file.
+2. Sau khi đã truy cập vào Vhost bạn tạo thêm cấu hình sau.
+location / {
+try_files $uri $uri/ /index.php?$args ;
+}
+3. Sau đó bạn tiến hành kiểm tra lại cú pháp/cấu hình xem có lỗi không, nếu không có lỗi bạn có thể tiến hành reload lại nginx để nhận vhost mới
+nginx -t
+4. Reload Nginx bằng lệnh
+nginx -s reload or service nginx reload
+
+
