@@ -69,8 +69,16 @@ Ex:   www.thuyhiend.space IN CNAME home.thuyhiend.space.
   thuyhiend.space MX 20 mail_2.thuyhiend.space
   thuyhiend.space MX 30 mail_3.thuyhiend.space
 
-
-
+####Cấu hình DNS Server trên CentOS 8 ####
+[1] Cài đặt bind và bind-utils
++ Cài đặt gói phần mềm BIND và bind-utills
+yum -y install bind*
++ Start dịch vụ DNS
+ systemctl start named
+ systemctl enable named
+ systemctl status namedx
+[2] Cấu hình bind DNS server.
+[3] Tạo forward DNS zone file cho tên miề
 
 
 
