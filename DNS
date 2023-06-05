@@ -15,6 +15,68 @@ Ex:  172.217.24.238    google.com
 # Subdomains
 # Định nghĩa máy chủ tên miền (name server)
 - Name server chứa csdl dùng cho việc chuyển đổi ip và tên miền. 
+# Primary DNS servers: Cấu hình tên miền và phản hồi DNS query.
+# Secondary DNS server: Như 1 backup, loadbalancer server
+# Caching DNS server: Lưu trữ phản hồi DNS => không cần hỏi lần 2 khi query
+
+
+
+# Hoạt động của hệ thống DNSt.
+Dịch vụ DNS Gồm 4 thành phần.
++ DNS Cache: Lưu trữ truy vấn.
++ Resolvers: Tra cứu thông tin tên miền.
++ Name Servers: Chứa csdl phục vụ cho các dns client
++ Name Space: 
+
+# Các loại bản ghi trên DNS.
+- RR: Resource Record miều thông tin miêu ta về DNS nằm ở các zone file ở các DNS zone.
+- Mỗi DNS zone có 1 zone file (được xem là 1 csdl). Các zone file có 1 hoặc nhiều RR(bản ghi) 
+
+# Các loại Resource Record.
+1. SOA (Start of Authority).
+Ex: 
+$TTL 86400
+@       IN SOA  masterdns.hiennt.com.     admin.hiennt.com. (
+                                2014090401    ; serial
+                                      3600    ; refresh
+                                      1800    ; retry
+                                    604800    ; expire
+                                     86400 )  ; TTL
+2. NS (Name Server): Mỗi tên miền cần có ít nhất 2 máy chủ.
+Ex: 
+thuyhiend.space IN NS ns1.zonedns.vn
+thuyhiend.space IN NS ns2.zonedns.vn
+
+3. Record A
+Ex: thuyhiend.space   A    103.101.161.201
+- Tên miền con: sub.thuyhiend.space   A   103.101.161.201
+
+4. Record AAAA.
+- Có nhiệm vụ tương tự như bản ghi A, nhưng thay vì địa chỉ IPv4 sẽ là địa chỉ IPv6.
+
+5. PTR(Pointer Records)
+Ex:  90.163.101.103.in-addr.arpa       IN PTR     masterdns.thuyhiend.space. 
+
+6. CNAME (Canonical Name).
++ Cho phép nhiều tên trỏ vào 1 cái IP
++ Cần có A record trỏ trên máy 
+Ex:   www.thuyhiend.space IN CNAME home.thuyhiend.space.
+
+7. MX(Mail Exchange).
++ Bản ghi MX có tác dụng xác định, chuyển thư đến domain hoặc subdomain đích.
+ Ex: 
+  thuyhiend.space MX 10 mail_1.thuyhiend.space
+  thuyhiend.space MX 20 mail_2.thuyhiend.space
+  thuyhiend.space MX 30 mail_3.thuyhiend.space
+
+
+
+
+
+
+
+
+
 
 
 
