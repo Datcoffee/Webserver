@@ -1,0 +1,39 @@
+### Giới thiệu và cài đặt Direct Admin ###
+1. Giới thiệu tổng quan.
+- Direct Admin là công cụ control panel trên Linux. Cung cấp đầy đủ tính năng cho người dùng, độ ổn định cao nhưng lại dễ dàng cài đặt, vận hành và không tốn quá nhiều tài nguyên.
+- Direct Admin chia các tính năng quản trị theo từng cấp độ user lần lượt là Admin, reseller (cấp đại lý), user (cấp người dùng).
+- Các tính năng phụ trợ khác như support ticket, tùy biến giao diện, tự khắc phục khi xảy ra lỗi.
+
+2. Yêu cầu cài đặt.
+- Chuẩn bị VPS trắng chưa cài các dịch vụ web, database server, FTP, PHP vàcó sử dụng IP public
+3. Cài đặt.
+3.1. Lấy lisence trial.
+3.2. Chạy scripts cài đặt:
+yum update -y
+wget https://www.directadmin.com/setup.sh
+chmod 755 setup.sh
+./setup.sh
+- Check
+Truy cập vào link: http://IP:2222
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
