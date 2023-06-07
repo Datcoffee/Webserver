@@ -1,0 +1,108 @@
+ ### Hướng dẫn cấu hình Log tập trung trên Linux ###
+1. Mô hình.
+https://camo.githubusercontent.com/aae211ebb0765fcb57b8bbf55d9211899aaebbf3/68747470733a2f2f696d6775722e636f6d2f6276637672656c2e6a7067
+
+2. Triển khai
+- Cấu hình Rsyslog Server.
+Bước 1: Chỉnh sửa trong file cấu hình /etc/rsyslog.conf của máy chủ Syslog-server để nó có thể nhận các bản tin log từ các client gửi về.
++ Bỏ comment 2 dòng sau: bạn có thể lựa chọn sử dụng UDP hoặc TCP để cho phép server nhận các bản tin log thông qua giao thức UDP.
++ Mặc định syslog sử dụng port 514 để gửi và nhận thông tin log. Ở đây mình sử dụng UDP.
++ Để máy chủ log tạo thành các thư mục lưu riêng log đối với từng máy Client gửi về thêm dòng này vào cuối file cấu hình
+- Cách 1: Thư mục lưu log client trả về sẽ là Ip-client
+$template RemoteServer, "/var/log/%fromhost-ip%/%SYSLOGFACILITY-TEXT%.log"
+*.* ?RemoteServer
+- Cách 2: Thư mục lưu log client trả về sẽ là tên máy client
+$template RemoteServer, "/var/log/%HOSTNAME%/%SYSLOGFACILITY-TEXT%.log"
+*.* ?RemoteServer
+- Ngoài ra có thể sử dụng cấu hình sau để lưu các file log với tên các chương trình.
+$template TmplAuth,"/var/log/%HOSTNAME%/%PROGRAMNAME%.log" #hostname
+*.*     ?TmplAuth
+$template TmplAuth,"/var/log/%fromhost-ip%/%PROGRAMNAME%.log" #ip-server
+*.*     ?TmplAuth
+
+Bước 2: Mở port 514
+firewall-cmd --permanent --add-port=514/udp
+firewall-cmd --permanent --add-port=514/tcp
+firewall-cmd --reload
+
+Bước 3: Khởi động lại Rsyslog-server và đảm bảo rằng nó hiện đang lắng nghe trên cổng 514 cho UDP hoặc TCP
+systemctl restart rsyslog
+netstat -una | grep 514 (UDP)
+netstat -tna | grep 514 (TCP)
+
+- Đây là cấu trúc thư mục ở phía máy chủ
+https://camo.githubusercontent.com/a10f6c70df67488f22a5577e5fdadd965448daee/68747470733a2f2f696d6775722e636f6d2f716279474a32332e6a7067
+
+#Cấu hình Rsyslog Client
+
+### Hướng dẫn cấu hình đẩy Log Apache về Ryslog Server ###
+
+1. Mô hình:
+- https://news.cloud365.vn/wp-content/uploads/2019/10/image-7.png
+
+2. Thực hiện.
+# Trên Client1:
+- Check 2 file log access_log và error_log trong /var/log/httpd khi cài apache.
+- Kiểm tra dịch vụ Web.
+
+3. Cấu hình đẩy Log Apache về Rsyslog Server.
+Cách 1: Sử dụng Rsyslog.
+- Tạo và thêm cấu hình sau sau vào file apache.conf:
+$ vi /etc/rsyslog.d/apache.conf
+$ModLoad imfile #Dòng này chỉ thêm một lần
+
+# Apache error file: 
+$InputFileName /var/log/httpd/error_log #Đường dẫn file log muốn đẩy
+$InputFileTag errorlog #Tên file 
+$InputFileSeverity info #Các log từ mức info trở lên được ghi lại
+$InputFileFacility local3 #Facility log
+$InputRunFileMonitor
+
+# Apache access file:
+$InputFileName /var/log/httpd/access_log
+$InputFileTag accesslog
+$InputFileSeverity info
+$InputFileFacility local4
+$InputRunFileMonitor
+
+$InputFilePollInterval 10 #Cứ sau 10 giây lại gửi tin nhắn
+
+- Restart Rsyslog
+$ systemctl restart rsyslog
+
+NOTE:  Sử dụng tcpdump để kiểm tra các gói tin đẩy về Rsyslog Server.
+Kiểm tra trên Rsyslog Server: ll
+Kiểm tra thử 2 file log đẩy về và đối chiếu với bên Client1: Test 2 file log này bằng cách restart lại dịch vụ httpd và truy cập vào địa chỉ web client1 để kiểm chứng có log đẩy về Server
+
+Cách 2: Sử dụng Logger.
+Thêm dòng sau vào cuối file cấu hình: vi /etc/httpd/conf/httpd.conf
+ErrorLog "|/bin/sh -c '/usr/bin/tee -a /var/log/httpd/httpd-error.log | /usr/bin/logger -thttpd -plocal1.info'"
+CustomLog "| /bin/sh -c '/usr/bin/tee -a /var/log/httpd/httpd-access.log | /usr/bin/logger -thttpd -plocal2.info'" combined
+
+# ErrorLog trả về Server file local1.log
+# AccessLog trả về file Server local2.log
+- Sau đó restart lại dịch vụ httpd
+- Dùng tcpdump để kiểm tra
+- Kiểm tra trên Rsyslog Server
+
+NOTE: Chú ý: Với 2 định dạng cấu hình file log client đẩy về server. 
+- Định dạng 1: %PROGRAMNAME%.log – tên theo các chương trình.
+        + Với cách sử dụng Logger định dạng này log apache được đẩy về server sẽ có tên httpd.log
+        + Theo cách cấu hình Rsyslog tên file log đẩy về sẽ là: errorlog.log và accesslog.log như cấu hình ở trên.
+- Định dạng 2: %SYSLOGFACILITY-TEXT%.log tên theo cơ sở sinh ra log.
+        + Log apache được đẩy về theo cách sử dụng Logger: tên file chứa log sẽ là local1.log và local2.log.
+        + Theo cách dùng Rsyslog, tên file chứa log sẽ là local3.log ứng với errorlog, local4.log ứng với accesslog.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
