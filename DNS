@@ -78,7 +78,9 @@ yum -y install bind*
  systemctl enable named
  systemctl status namedx
 [2] Cấu hình bind DNS server.
-[3] Tạo forward DNS zone file cho tên miề
+[3] Tạo forward DNS zone file cho tên miền
+
+
 
 
 
